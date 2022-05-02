@@ -14,21 +14,5 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="actionButtonStyle">
-        <item name="android:background">@color/actionButton</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">5dp</item>
-    </style>
 
-    <style name="numberButtonStyle">
-        <item name="android:background">@color/numberButton</item>
-        <item name="android:textColor">@color/black</item>
-        <item name="android:layout_width">0dp</item>
-        <item name="android:layout_weight">1</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_margin">5dp</item>
-    </style>
 </resources>

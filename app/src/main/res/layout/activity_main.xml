@@ -17,6 +17,7 @@
             android:id="@+id/tvExpression"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:textSize="36sp"
             tools:text="2*2" />
     </LinearLayout>
@@ -31,6 +32,8 @@
             android:id="@+id/tvLabelEqual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
             android:text="="
             android:textSize="40sp"
             android:visibility="gone"
@@ -40,6 +43,7 @@
             android:id="@+id/tvResult"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="20dp"
             android:textSize="36sp"
             tools:text="4"
             android:visibility="gone"
@@ -51,6 +55,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:padding="10dp"
         android:layout_gravity="bottom"
         android:gravity="bottom"
         android:orientation="vertical">
@@ -61,13 +66,13 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatButton
-                style="@style/actionButtonStyle"
+                style="@style/actionRemoveAllButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="AC"
                 android:text="AC" />
 
             <androidx.appcompat.widget.AppCompatButton
-                style="@style/actionButtonStyle"
+                style="@style/actionRemoveOneCharacterButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="DEL"
                 android:text="DEL" />
@@ -203,7 +208,7 @@
                 android:text="." />
 
             <androidx.appcompat.widget.AppCompatButton
-                style="@style/actionButtonStyle"
+                style="@style/actionEqualButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="="
                 android:text="=" />
