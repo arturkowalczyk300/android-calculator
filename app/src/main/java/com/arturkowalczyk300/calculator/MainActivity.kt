@@ -17,10 +17,10 @@ import kotlin.math.exp
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var textViewExpression: TextView
-    lateinit var textViewResult: TextView
-    lateinit var textViewLabelEqual: TextView
-    var currentExpression: StringBuilder = StringBuilder()
+    private lateinit var textViewExpression: TextView
+    private lateinit var textViewResult: TextView
+    private lateinit var textViewLabelEqual: TextView
+    private var currentExpression: StringBuilder = StringBuilder()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,22 +34,24 @@ class MainActivity : AppCompatActivity() {
     fun buttonOnClickListener(view: View) {
         switchResultVisibility(false) //expression changed
 
-        val tag: String = view.getTag().toString()
+        val tag: String = view.tag.toString()
 
         if (isStringNumber(tag)) {
             currentExpression.append(tag)
         } else if (isStringOperator(tag)) {
-            if (!isStringOperator(  //ensure if last character is not operator
-                    Character.toString(
-                        currentExpression.get(currentExpression.length - 1)
-                    )
-                )
+            val isPreviousCharacterOperator =
+                if (currentExpression.isNotEmpty())
+                    isStringOperator(currentExpression[currentExpression.length - 1].toString())
+                else
+                    false
+            if (tag == "-" //exception condition to make typing negative numbers possible
+                || !isPreviousCharacterOperator
             ) {
                 currentExpression.append(tag)
             }
         } else if (tag == "DEL") {
-            if (currentExpression.length > 0)
-                currentExpression.setLength((currentExpression.length - 1)) //delete last char
+            if (currentExpression.isNotEmpty())
+                currentExpression.setLength((currentExpression.length - 1)) //delete last character
         } else if (tag == "AC") {
             currentExpression.clear()
         } else if (tag == "=") {
@@ -58,7 +60,7 @@ class MainActivity : AppCompatActivity() {
         }
 
 
-        textViewExpression.setText(currentExpression)
+        textViewExpression.text = currentExpression
     }
 
     private fun calculateResult(expression: String) {
@@ -68,13 +70,13 @@ class MainActivity : AppCompatActivity() {
                     .build()
             val result: Double = exp.evaluate()
 
-            textViewResult.setText(result.toString())
+            textViewResult.text = result.toString()
         } catch (exc: Exception) {
             Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
         }
     }
 
-    fun isStringOperator(expression: String): Boolean {
+    private fun isStringOperator(expression: String): Boolean {
         var isOperator = false
 
         when (expression) {
@@ -88,7 +90,7 @@ class MainActivity : AppCompatActivity() {
         return isOperator
     }
 
-    fun isStringNumber(expression: String): Boolean {
+    private fun isStringNumber(expression: String): Boolean {
         var isNumber = true // init value
 
         try {
@@ -99,9 +101,9 @@ class MainActivity : AppCompatActivity() {
         return isNumber
     }
 
-    fun switchResultVisibility(visible: Boolean) {
+    private fun switchResultVisibility(visible: Boolean) {
         val visibility = if (visible) View.VISIBLE else View.GONE
-        textViewResult.setVisibility(visibility)
-        textViewLabelEqual.setVisibility(visibility)
+        textViewResult.visibility = visibility
+        textViewLabelEqual.visibility = visibility
     }
 }
