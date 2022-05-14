@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.ViewModelProvider
 import net.objecthunter.exp4j.Expression
 import net.objecthunter.exp4j.ExpressionBuilder
 import java.lang.Exception
@@ -17,10 +18,11 @@ import kotlin.math.exp
 
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var viewModel: MainViewModel
     private lateinit var textViewExpression: TextView
     private lateinit var textViewResult: TextView
     private lateinit var textViewLabelEqual: TextView
-    private var currentExpression: StringBuilder = StringBuilder()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,6 +31,8 @@ class MainActivity : AppCompatActivity() {
         textViewExpression = findViewById(R.id.tvExpression)
         textViewResult = findViewById(R.id.tvResult)
         textViewLabelEqual = findViewById(R.id.tvLabelEqual)
+
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
     }
 
     fun buttonOnClickListener(view: View) {
@@ -36,70 +40,43 @@ class MainActivity : AppCompatActivity() {
 
         val tag: String = view.tag.toString()
 
-        if (isStringNumber(tag)) {
-            currentExpression.append(tag)
-        } else if (isStringOperator(tag)) {
+        if (viewModel.isStringNumber(tag)) {
+            viewModel.currentExpression.append(tag)
+        } else if (viewModel.isStringOperator(tag)) {
             val isPreviousCharacterOperator =
-                if (currentExpression.isNotEmpty())
-                    isStringOperator(currentExpression[currentExpression.length - 1].toString())
+                if (viewModel.currentExpression.isNotEmpty())
+                    viewModel.isStringOperator(
+                        viewModel.currentExpression[viewModel.currentExpression.length - 1]
+                            .toString()
+                    )
                 else
                     false
             if (tag == "-" //exception condition to make typing negative numbers possible
                 || !isPreviousCharacterOperator
             ) {
-                currentExpression.append(tag)
+                viewModel.currentExpression.append(tag)
             }
         } else if (tag == "DEL") {
-            if (currentExpression.isNotEmpty())
-                currentExpression.setLength((currentExpression.length - 1)) //delete last character
+            if (viewModel.currentExpression.isNotEmpty())
+                viewModel.currentExpression
+                    .setLength((viewModel.currentExpression.length - 1)) //delete last character
         } else if (tag == "AC") {
-            currentExpression.clear()
+            viewModel.currentExpression.clear()
         } else if (tag == "=") {
-            calculateResult(currentExpression.toString())
+            try {
+                textViewResult.text =
+                    viewModel.calculateResult(viewModel.currentExpression.toString())
+                        .toString()
+            } catch (exc: Exception) {
+                Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
+            }
             switchResultVisibility(true) //result ready
         }
 
 
-        textViewExpression.text = currentExpression
+        textViewExpression.text = viewModel.currentExpression
     }
 
-    private fun calculateResult(expression: String) {
-        try {
-            val exp: Expression =
-                ExpressionBuilder(expression.replace("x", "*"))
-                    .build()
-            val result: Double = exp.evaluate()
-
-            textViewResult.text = result.toString()
-        } catch (exc: Exception) {
-            Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
-        }
-    }
-
-    private fun isStringOperator(expression: String): Boolean {
-        var isOperator = false
-
-        when (expression) {
-            "x" -> isOperator = true
-            "+" -> isOperator = true
-            "/" -> isOperator = true
-            "-" -> isOperator = true
-            "%" -> isOperator = true
-            "." -> isOperator = true
-        }
-        return isOperator
-    }
-
-    private fun isStringNumber(expression: String): Boolean {
-        var isNumber = true // init value
-
-        try {
-            parseInt(expression)
-        } catch (ex: NumberFormatException) {
-            isNumber = false
-        }
-        return isNumber
-    }
 
     private fun switchResultVisibility(visible: Boolean) {
         val visibility = if (visible) View.VISIBLE else View.GONE
