@@ -66,17 +66,28 @@ class MainActivity : AppCompatActivity() {
             viewModel.currentExpression.insert(currentIndex, tag)
         } else if (viewModel.isStringOperator(tag)) {
             val isPreviousCharacterOperator =
-                if (viewModel.currentExpression.isNotEmpty())
-                    viewModel.isStringOperator(
+                if (viewModel.currentExpression.isNotEmpty() && currentIndex>0)
+                    (viewModel.isStringOperator(
                         viewModel.currentExpression[currentIndex - 1] //prevent entering two operators next to each other
                             .toString()
-                    )
+                    ))
                 else {
-                    characterNotAdded = true
                     false
                 }
+
+            val isNextCharacterOperator =
+                if (viewModel.currentExpression.isNotEmpty() && ((currentIndex + 1) <= lastElementIndex))
+                    (viewModel.isStringOperator(
+                        viewModel.currentExpression[currentIndex] //prevent entering two operators next to each other
+                            .toString()
+                    )
+                            )
+                else {
+                    false
+                }
+
             if (tag == "-" //exception condition to make typing negative numbers possible
-                || !isPreviousCharacterOperator
+                || (!isPreviousCharacterOperator && !isNextCharacterOperator)
             ) {
                 viewModel.currentExpression.insert(currentIndex, tag)
             } else
