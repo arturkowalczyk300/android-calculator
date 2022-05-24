@@ -13,8 +13,8 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/tvExpression"
+        <com.arturkowalczyk300.calculator.EditTextWithSelectionChangedListener
+            android:id="@+id/editTextExpression"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
@@ -37,7 +37,7 @@
             android:text="="
             android:textSize="40sp"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:visibility="visible" />
 
         <TextView
             android:id="@+id/tvResult"
@@ -45,9 +45,9 @@
             android:layout_height="wrap_content"
             android:layout_margin="20dp"
             android:textSize="36sp"
-            tools:text="4"
             android:visibility="gone"
-            tools:visibility="visible"/>
+            tools:text="4"
+            tools:visibility="visible" />
 
     </LinearLayout>
 
@@ -55,10 +55,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp"
         android:layout_gravity="bottom"
         android:gravity="bottom"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp">
         <!-- first row -->
         <LinearLayout
             android:layout_width="match_parent"

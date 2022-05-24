@@ -1,25 +1,20 @@
 package com.arturkowalczyk300.calculator
 
-import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import net.objecthunter.exp4j.Expression
-import net.objecthunter.exp4j.ExpressionBuilder
+import com.arturkowalczyk300.calculator.EditTextWithSelectionChangedListener.OnSelectionChangedListener
 import java.lang.Exception
-import java.lang.Integer.parseInt
-import java.lang.NumberFormatException
-import java.lang.StringBuilder
-import kotlin.math.exp
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
-    private lateinit var textViewExpression: TextView
+    private lateinit var editTextExpression: EditTextWithSelectionChangedListener
+    private var editTextExpressionCursorCurrentIndex = 0
+    private var editTextExpressionCursorLastNonZeroIndex = 0
     private lateinit var textViewResult: TextView
     private lateinit var textViewLabelEqual: TextView
 
@@ -28,41 +23,74 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        textViewExpression = findViewById(R.id.tvExpression)
+        editTextExpression = findViewById(R.id.editTextExpression)
         textViewResult = findViewById(R.id.tvResult)
         textViewLabelEqual = findViewById(R.id.tvLabelEqual)
 
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        editTextExpression.showSoftInputOnFocus = false //disable popup keyboard on view select
+
+        editTextExpression.onSelectionChangedListener = object : OnSelectionChangedListener {
+            override fun onSelectionChanged(selStart: Int, selEnd: Int) {
+                editTextExpressionCursorCurrentIndex = selEnd
+                if (editTextExpressionCursorCurrentIndex > 0)
+                    editTextExpressionCursorLastNonZeroIndex = editTextExpressionCursorCurrentIndex
+            }
+        }
+
+        viewModel = ViewModelProvider(this)[MainViewModel::
+        class.java]
     }
 
     fun buttonOnClickListener(view: View) {
+        val lastElementIndex =
+            if (editTextExpression.length() > 0) editTextExpression.length() else 0
+
+        val currentIndex: Int =
+            if (!editTextExpression.isCursorVisible) {
+                lastElementIndex
+            } else {
+                if (editTextExpressionCursorCurrentIndex > 0)
+                    editTextExpressionCursorCurrentIndex
+                else
+                    0
+            }
+
+        var moveCursorBackwardFlag = false
+        var characterNotAdded = false
+
         switchResultVisibility(false) //expression changed
 
         val tag: String = view.tag.toString()
 
         if (viewModel.isStringNumber(tag)) {
-            viewModel.currentExpression.append(tag)
+            viewModel.currentExpression.insert(currentIndex, tag)
         } else if (viewModel.isStringOperator(tag)) {
             val isPreviousCharacterOperator =
                 if (viewModel.currentExpression.isNotEmpty())
                     viewModel.isStringOperator(
-                        viewModel.currentExpression[viewModel.currentExpression.length - 1]
+                        viewModel.currentExpression[currentIndex - 1] //prevent entering two operators next to each other
                             .toString()
                     )
-                else
+                else {
+                    characterNotAdded = true
                     false
+                }
             if (tag == "-" //exception condition to make typing negative numbers possible
                 || !isPreviousCharacterOperator
             ) {
-                viewModel.currentExpression.append(tag)
-            }
+                viewModel.currentExpression.insert(currentIndex, tag)
+            } else
+                characterNotAdded = true
         } else if (tag == "DEL") {
-            if (viewModel.currentExpression.isNotEmpty())
-                viewModel.currentExpression
-                    .setLength((viewModel.currentExpression.length - 1)) //delete last character
+            if (viewModel.currentExpression.isNotEmpty() && currentIndex > 0) {
+                viewModel.currentExpression.deleteCharAt(currentIndex - 1)
+                moveCursorBackwardFlag = true
+            } else
+                characterNotAdded = true
         } else if (tag == "AC") {
             viewModel.currentExpression.clear()
         } else if (tag == "=") {
+            characterNotAdded = true
             try {
                 textViewResult.text =
                     viewModel.calculateResult(viewModel.currentExpression.toString())
@@ -73,8 +101,15 @@ class MainActivity : AppCompatActivity() {
             switchResultVisibility(true) //result ready
         }
 
+        val cursorPosition = editTextExpression.selectionEnd
+        editTextExpression.setText(viewModel.currentExpression)
 
-        textViewExpression.text = viewModel.currentExpression
+        if (!characterNotAdded) {
+            if (moveCursorBackwardFlag && cursorPosition > 0)
+                editTextExpression.setSelection(cursorPosition - 1) //move cursor to left
+            else editTextExpression.setSelection(cursorPosition + 1) //move cursor to right
+        } else
+            editTextExpression.setSelection(cursorPosition) //restore previous cursor position
     }
 
 
