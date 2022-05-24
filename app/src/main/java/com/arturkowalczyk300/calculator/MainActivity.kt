@@ -56,7 +56,8 @@ class MainActivity : AppCompatActivity() {
             }
 
         var moveCursorBackwardFlag = false
-        var characterNotAdded = false
+        var characterNotAddedFlag = false
+        var expressionClearedFlag = false
 
         switchResultVisibility(false) //expression changed
 
@@ -66,7 +67,7 @@ class MainActivity : AppCompatActivity() {
             viewModel.currentExpression.insert(currentIndex, tag)
         } else if (viewModel.isStringOperator(tag)) {
             val isPreviousCharacterOperator =
-                if (viewModel.currentExpression.isNotEmpty() && currentIndex>0)
+                if (viewModel.currentExpression.isNotEmpty() && currentIndex > 0)
                     (viewModel.isStringOperator(
                         viewModel.currentExpression[currentIndex - 1] //prevent entering two operators next to each other
                             .toString()
@@ -91,17 +92,18 @@ class MainActivity : AppCompatActivity() {
             ) {
                 viewModel.currentExpression.insert(currentIndex, tag)
             } else
-                characterNotAdded = true
+                characterNotAddedFlag = true
         } else if (tag == "DEL") {
             if (viewModel.currentExpression.isNotEmpty() && currentIndex > 0) {
                 viewModel.currentExpression.deleteCharAt(currentIndex - 1)
                 moveCursorBackwardFlag = true
             } else
-                characterNotAdded = true
+                characterNotAddedFlag = true
         } else if (tag == "AC") {
             viewModel.currentExpression.clear()
+            expressionClearedFlag = true
         } else if (tag == "=") {
-            characterNotAdded = true
+            characterNotAddedFlag = true
             try {
                 textViewResult.text =
                     viewModel.calculateResult(viewModel.currentExpression.toString())
@@ -115,12 +117,14 @@ class MainActivity : AppCompatActivity() {
         val cursorPosition = editTextExpression.selectionEnd
         editTextExpression.setText(viewModel.currentExpression)
 
-        if (!characterNotAdded) {
-            if (moveCursorBackwardFlag && cursorPosition > 0)
-                editTextExpression.setSelection(cursorPosition - 1) //move cursor to left
-            else editTextExpression.setSelection(cursorPosition + 1) //move cursor to right
-        } else
-            editTextExpression.setSelection(cursorPosition) //restore previous cursor position
+        if (!expressionClearedFlag) {
+            if (!characterNotAddedFlag) {
+                if (moveCursorBackwardFlag && cursorPosition > 0)
+                    editTextExpression.setSelection(cursorPosition - 1) //move cursor to left
+                else editTextExpression.setSelection(cursorPosition + 1) //move cursor to right
+            } else
+                editTextExpression.setSelection(cursorPosition) //restore previous cursor position
+        }
     }
 
 
