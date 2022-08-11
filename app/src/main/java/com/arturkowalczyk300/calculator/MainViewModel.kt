@@ -1,23 +1,20 @@
 package com.arturkowalczyk300.calculator
 
-import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import net.objecthunter.exp4j.Expression
 import net.objecthunter.exp4j.ExpressionBuilder
-import java.lang.Exception
 import java.lang.NumberFormatException
 import java.lang.StringBuilder
 
 class MainViewModel: ViewModel() {
     var currentExpression: StringBuilder = StringBuilder()
 
-    fun calculateResult(expression: String): Double{
-            val exp: Expression =
-                ExpressionBuilder(expression.replace("x", "*"))
-                    .build()
-            val result: Double = exp.evaluate()
+    fun calculateResult(expression: String): Double {
+        val exp: Expression =
+            ExpressionBuilder(expression.replace("x", "*"))
+                .build()
 
-            return result
+        return exp.evaluate()
     }
 
     fun isStringOperator(expression: String): Boolean {
