@@ -61,7 +61,7 @@ class MainViewModelTest {
 
     @Test
     fun testIsStringOperator() {
-        assertTrue(myViewModel.isStringOperator("x"))
+        assertTrue(myViewModel.isStringOperator("*"))
         assertTrue(myViewModel.isStringOperator("+"))
         assertTrue(myViewModel.isStringOperator("/"))
         assertTrue(myViewModel.isStringOperator("-"))

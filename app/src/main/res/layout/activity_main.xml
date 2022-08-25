@@ -117,8 +117,8 @@
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionButtonStyle"
                 android:onClick="buttonOnClickListener"
-                android:tag="x"
-                android:text="x" />
+                android:tag="*"
+                android:text="*" />
         </LinearLayout>
 
         <!-- third row -->

@@ -11,7 +11,7 @@ class MainViewModel: ViewModel() {
 
     fun calculateResult(expression: String): Double {
         val exp: Expression =
-            ExpressionBuilder(expression.replace("x", "*"))
+            ExpressionBuilder(expression)
                 .build()
 
         return exp.evaluate()
@@ -21,7 +21,7 @@ class MainViewModel: ViewModel() {
         var isOperator = false
 
         when (expression) {
-            "x" -> isOperator = true
+            "*" -> isOperator = true
             "+" -> isOperator = true
             "/" -> isOperator = true
             "-" -> isOperator = true
