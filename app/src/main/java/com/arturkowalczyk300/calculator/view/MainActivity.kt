@@ -1,4 +1,4 @@
-package com.arturkowalczyk300.calculator
+package com.arturkowalczyk300.calculator.view
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -6,7 +6,9 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.ViewModelProvider
-import com.arturkowalczyk300.calculator.EditTextWithSelectionChangedListener.OnSelectionChangedListener
+import com.arturkowalczyk300.calculator.viewmodel.MainViewModel
+import com.arturkowalczyk300.calculator.R
+import com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener.OnSelectionChangedListener
 import java.lang.Exception
 
 
@@ -39,6 +41,9 @@ class MainActivity : AppCompatActivity() {
 
         viewModel = ViewModelProvider(this)[MainViewModel::
         class.java]
+
+        //init database
+        viewModel.initDatabase(applicationContext)
     }
 
     fun buttonOnClickListener(view: View) {

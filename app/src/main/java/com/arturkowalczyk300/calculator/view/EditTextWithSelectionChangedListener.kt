@@ -1,10 +1,9 @@
-package com.arturkowalczyk300.calculator
+package com.arturkowalczyk300.calculator.view
 
 import android.annotation.SuppressLint
 import android.content.Context
 import android.util.AttributeSet
 import android.widget.EditText
-import android.widget.Toast
 
 @SuppressLint("AppCompatCustomView")
 class EditTextWithSelectionChangedListener : EditText {

@@ -1,6 +1,8 @@
-package com.arturkowalczyk300.calculator
+package com.arturkowalczyk300.calculator.viewmodel
 
+import android.content.Context
 import androidx.lifecycle.ViewModel
+import com.arturkowalczyk300.calculator.model.CalculationsHistoryRepository
 import net.objecthunter.exp4j.Expression
 import net.objecthunter.exp4j.ExpressionBuilder
 import java.lang.NumberFormatException
@@ -8,6 +10,15 @@ import java.lang.StringBuilder
 
 class MainViewModel: ViewModel() {
     var currentExpression: StringBuilder = StringBuilder()
+    private var repository: CalculationsHistoryRepository
+
+    init{
+        repository = CalculationsHistoryRepository()
+    }
+
+    fun initDatabase(context: Context){
+        repository.initDatabase(context)
+    }
 
     fun calculateResult(expression: String): Double {
         val exp: Expression =

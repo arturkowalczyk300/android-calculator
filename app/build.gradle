@@ -67,4 +67,12 @@ dependencies {
     androidTestImplementation('androidx.test:runner:1.4.0')
     androidTestImplementation('androidx.test:rules:1.4.0')
 
+    //Room
+    def room_version = "2.4.3"
+
+    implementation("androidx.room:room-runtime:$room_version")
+    annotationProcessor("androidx.room:room-compiler:$room_version")
+    kapt "androidx.room:room-compiler:$room_version"    // To use Kotlin annotation processing tool (kapt)
+
+
 }

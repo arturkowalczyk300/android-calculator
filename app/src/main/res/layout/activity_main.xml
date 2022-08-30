@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".MainActivity">
+    tools:context=".view.MainActivity">
 
     <LinearLayout
         android:id="@+id/llEquation"
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <com.arturkowalczyk300.calculator.EditTextWithSelectionChangedListener
+        <com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener
             android:id="@+id/editTextExpression"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
