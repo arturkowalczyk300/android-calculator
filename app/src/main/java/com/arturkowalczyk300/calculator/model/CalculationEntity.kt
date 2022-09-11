@@ -7,8 +7,13 @@ import java.util.*
 
 @Entity(tableName = "main_table")
 data class CalculationEntity(
-    @PrimaryKey val id: Int,
-    @ColumnInfo(name="equation") val equation: String,
-    @ColumnInfo(name="result") val result: Double,
-    @ColumnInfo(name="timestamp") val timestamp: Date
+    @PrimaryKey
+    @ColumnInfo(name = "equation")
+    val equation: String,
+
+    @ColumnInfo(name = "result")
+    val result: Double,
+
+    @ColumnInfo(name = "timestamp")
+    val timestamp: Date
 )

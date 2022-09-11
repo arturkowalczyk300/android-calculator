@@ -4,19 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy.IGNORE
+import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 
 @Dao
 interface CalculationsHistoryDAO {
     @Query("SELECT * FROM main_table")
-    fun getAllCalculationHistoryEntities(): LiveData<CalculationEntity>
+    fun getAllCalculationHistoryEntities(): LiveData<List<CalculationEntity>>
 
-    @Insert
-    fun insertCalculationHistoryEntity(entity: CalculationEntity)
+    @Insert(onConflict = REPLACE)
+    suspend fun insertCalculationHistoryEntity(entity: CalculationEntity)
 
     @Delete
-    fun deleteCalculationHistoryEntity(entity: CalculationEntity)
+    suspend fun deleteCalculationHistoryEntity(entity: CalculationEntity)
 
     @Query("DELETE FROM main_table")
-    fun deleteAllCalculationHistoryEntities()
+    suspend fun deleteAllCalculationHistoryEntities()
 }

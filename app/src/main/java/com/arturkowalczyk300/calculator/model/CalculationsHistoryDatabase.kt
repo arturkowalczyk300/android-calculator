@@ -3,7 +3,7 @@ package com.arturkowalczyk300.calculator.model
 import android.content.Context
 import androidx.room.*
 
-@Database(entities = [CalculationEntity::class], version = 1)
+@Database(entities = [CalculationEntity::class], version = 3)
 @TypeConverters(DatabaseConverters::class)
 abstract class CalculationsHistoryDatabase : RoomDatabase() {
     abstract fun getDAO(): CalculationsHistoryDAO
@@ -19,6 +19,7 @@ abstract class CalculationsHistoryDatabase : RoomDatabase() {
                         CalculationsHistoryDatabase::class.java,
                         "CalculationsHistoryDatabase"
                     )
+                        .fallbackToDestructiveMigration()
                         .build()
             return dbInstance!!
         }

@@ -1,15 +1,22 @@
 package com.arturkowalczyk300.calculator.view
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.arturkowalczyk300.calculator.viewmodel.MainViewModel
 import com.arturkowalczyk300.calculator.R
+import com.arturkowalczyk300.calculator.model.CalculationEntity
 import com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener.OnSelectionChangedListener
 import java.lang.Exception
+import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +27,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var textViewResult: TextView
     private lateinit var textViewLabelEqual: TextView
 
+    private var listOfHistoricalCalculations: List<CalculationEntity>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,6 +52,27 @@ class MainActivity : AppCompatActivity() {
 
         //init database
         viewModel.initDatabase(applicationContext)
+
+        //observe livedata
+        viewModel.getAllCalculationHistoryEntities().observe(this, Observer {
+            listOfHistoricalCalculations = it
+        })
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.main_options_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.main_options_menu_history -> {
+                displayCalculationsHistoryDialog()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     fun buttonOnClickListener(view: View) {
@@ -111,7 +140,10 @@ class MainActivity : AppCompatActivity() {
             characterNotAddedFlag = true
             try {
                 textViewResult.text =
-                    viewModel.calculateResult(viewModel.currentExpression.toString())
+                    viewModel.calculateResult(
+                        viewModel.currentExpression.toString(),
+                        Date() //current date
+                    )
                         .toString()
             } catch (exc: Exception) {
                 Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
@@ -132,6 +164,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun displayCalculationsHistoryDialog() {
+
+        val builder: AlertDialog.Builder? = AlertDialog.Builder(this)
+        builder
+            ?.setNeutralButton("Delete all", DialogInterface.OnClickListener { dialog, which ->
+                viewModel.deleteAllCalculationHistoryEntities()
+            })
+            ?.setTitle(getString(R.string.calculations_history_title))
+            ?.setItems(listOfHistoricalCalculations?.map {
+                it.equation
+            }?.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
+                viewModel.currentExpression.clear()
+                viewModel.currentExpression.append(listOfHistoricalCalculations!![which].equation)
+                editTextExpression.setText(viewModel.currentExpression.toString())
+            })
+
+        val dialog: AlertDialog? = builder?.create()
+        dialog?.show()
+    }
 
     private fun switchResultVisibility(visible: Boolean) {
         val visibility = if (visible) View.VISIBLE else View.GONE
