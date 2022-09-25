@@ -19,6 +19,9 @@ interface CalculationsHistoryDAO {
     @Delete
     suspend fun deleteCalculationHistoryEntity(entity: CalculationEntity)
 
+    @Query("DELETE FROM main_table WHERE equation=:entityEquation")
+    suspend fun deleteCalculationHistoryEntity(entityEquation: String)
+
     @Query("DELETE FROM main_table")
     suspend fun deleteAllCalculationHistoryEntities()
 }

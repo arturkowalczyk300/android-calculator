@@ -1,12 +1,13 @@
 package com.arturkowalczyk300.calculator.view
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Button
+import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -166,21 +167,34 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayCalculationsHistoryDialog() {
 
-        val builder: AlertDialog.Builder? = AlertDialog.Builder(this)
-        builder
-            ?.setNeutralButton("Delete all", DialogInterface.OnClickListener { dialog, which ->
-                viewModel.deleteAllCalculationHistoryEntities()
-            })
-            ?.setTitle(getString(R.string.calculations_history_title))
-            ?.setItems(listOfHistoricalCalculations?.map {
-                it.equation
-            }?.toTypedArray(), DialogInterface.OnClickListener { dialog, which ->
-                viewModel.currentExpression.clear()
-                viewModel.currentExpression.append(listOfHistoricalCalculations!![which].equation)
-                editTextExpression.setText(viewModel.currentExpression.toString())
-            })
+        val builder: AlertDialog.Builder? = AlertDialog.Builder(this, R.style.custom_calculations_history_dialog_style)
+        val view = layoutInflater.inflate(R.layout.custom_calculations_history_dialog, null)
+
+        builder?.setView(view)
+
+        val lv = view.findViewById<ListView>(R.id.dialog_lvCalculationsHistory)
+        lv.adapter = CalculationsHistoryArrayAdapter(this, listOfHistoricalCalculations?.map {
+            it.equation
+        } as ArrayList<String>)
+
+        val btnDeleteAll = view.findViewById<Button>(R.id.dialog_btnDeleteAll)
+        btnDeleteAll.setOnClickListener {
+            viewModel.deleteAllCalculationHistoryEntities()
+            (lv.adapter as CalculationsHistoryArrayAdapter).deleteAll()
+        }
 
         val dialog: AlertDialog? = builder?.create()
+
+        (lv.adapter as CalculationsHistoryArrayAdapter).setItemOnClickListener { equation ->
+            viewModel.currentExpression.clear()
+            viewModel.currentExpression.append(equation)
+            editTextExpression.setText(viewModel.currentExpression.toString())
+            dialog?.dismiss()
+        }
+        (lv.adapter as CalculationsHistoryArrayAdapter).setDeleteButtonOnClickListener {
+            viewModel.deleteCalculationHistoryEntity(it!!)
+        }
+
         dialog?.show()
     }
 

@@ -77,6 +77,10 @@ class MainViewModel : ViewModel() {
         repository.deleteCalculationHistoryEntity(entity)
     }
 
+    fun deleteCalculationHistoryEntity(entityEquation: String) {
+        repository.deleteCalculationHistoryEntity(entityEquation)
+    }
+
     fun deleteAllCalculationHistoryEntities() {
         repository.deleteAllCalculationHistoryEntities()
     }

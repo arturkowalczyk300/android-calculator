@@ -34,6 +34,12 @@ class CalculationsHistoryRepository() {
         }
     }
 
+    fun deleteCalculationHistoryEntity(entityEquation: String) {
+        return runBlocking {
+            dao!!.deleteCalculationHistoryEntity(entityEquation)
+        }
+    }
+
     fun deleteAllCalculationHistoryEntities() {
         return runBlocking {
             dao!!.deleteAllCalculationHistoryEntities()
