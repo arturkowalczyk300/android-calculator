@@ -29,15 +29,17 @@ class MainViewModel : ViewModel() {
                 .build()
         val result = exp.evaluate()
 
+        return result
+    }
+
+    fun insertCalculationToHistory(expression: String, currentDate: Date = Date(0), result:Double){
         repository.insertCalculationHistoryEntity(
             CalculationEntity(
                 expression,
                 result,
-                Date(0)
+                currentDate
             )
         )
-
-        return result
     }
 
     fun isStringOperator(expression: String): Boolean {
@@ -69,9 +71,6 @@ class MainViewModel : ViewModel() {
         return repository.getAllCalculationHistoryEntities()
     }
 
-    fun insertCalculationHistoryEntity(entity: CalculationEntity) {
-        repository.insertCalculationHistoryEntity(entity)
-    }
 
     fun deleteCalculationHistoryEntity(entity: CalculationEntity) {
         repository.deleteCalculationHistoryEntity(entity)

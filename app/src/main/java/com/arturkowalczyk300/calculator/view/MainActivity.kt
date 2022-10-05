@@ -144,12 +144,16 @@ class MainActivity : AppCompatActivity() {
         } else if (tag == "=") {
             characterNotAddedFlag = true
             try {
-                textViewResult.text =
-                    viewModel.calculateResult(
-                        viewModel.currentExpression.toString(),
-                        Date() //current date
-                    )
-                        .toString()
+                val exp = viewModel.currentExpression.toString()
+                val date = Date()
+                val result = viewModel.calculateResult(
+                    exp,
+                    date //current date
+                )
+                textViewResult.text = result.toString()
+
+                viewModel.insertCalculationToHistory(exp, date, result)
+
             } catch (exc: Exception) {
                 Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
             }
