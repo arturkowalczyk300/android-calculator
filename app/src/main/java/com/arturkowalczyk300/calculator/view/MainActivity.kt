@@ -21,6 +21,10 @@ import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
+    companion object {
+        val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
+    }
+
     private lateinit var viewModel: MainViewModel
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
     private var editTextExpressionCursorCurrentIndex = 0
@@ -167,8 +171,12 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayCalculationsHistoryDialog() {
 
-        val builder: AlertDialog.Builder? = AlertDialog.Builder(this, R.style.custom_calculations_history_dialog_style)
+        val builder: AlertDialog.Builder? =
+            AlertDialog.Builder(this, R.style.custom_calculations_history_dialog_style)
         val view = layoutInflater.inflate(R.layout.custom_calculations_history_dialog, null)
+            .apply {
+                tag = DIALOG_CALCULATIONS_HISTORY_TAG
+            }
 
         builder?.setView(view)
 
