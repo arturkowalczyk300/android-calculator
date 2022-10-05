@@ -68,4 +68,10 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_margin">5dp</item>
     </style>
+
+    <style name="custom_calculations_history_dialog_style" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowBackground">
+            @drawable/custom_calculations_history_dialog_rounded_corner
+        </item>
+    </style>
 </resources>

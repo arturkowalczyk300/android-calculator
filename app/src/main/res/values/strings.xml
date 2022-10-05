@@ -1,3 +1,6 @@
 <resources>
     <string name="app_name">Calculator</string>
+    <string name="calculations_history_title">Calculations history</string>
+    <string name="calculations_history_button_delete">Delete</string>
+    <string name="calculations_history_button_delete_all">Delete all</string>
 </resources>

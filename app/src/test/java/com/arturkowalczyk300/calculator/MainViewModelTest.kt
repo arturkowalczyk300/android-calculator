@@ -1,7 +1,6 @@
 package com.arturkowalczyk300.calculator
 
-import net.objecthunter.exp4j.Expression
-import net.objecthunter.exp4j.ExpressionBuilder
+import com.arturkowalczyk300.calculator.viewmodel.MainViewModel
 import org.junit.Assert.*
 import org.junit.Before
 
