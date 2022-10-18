@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.animation.AlphaAnimation
 import android.widget.Button
 import android.widget.ListView
 import android.widget.TextView
@@ -81,6 +82,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun buttonOnClickListener(view: View) {
+        view.startAnimation(clickAnimation())
+
         val lastElementIndex =
             if (editTextExpression.length() > 0) editTextExpression.length() else 0
 
@@ -215,4 +218,11 @@ class MainActivity : AppCompatActivity() {
         textViewResult.visibility = visibility
         textViewLabelEqual.visibility = visibility
     }
+
+    private fun clickAnimation():AlphaAnimation{
+        val anim = AlphaAnimation(1.0f, 0.7f)
+        anim.duration = 100
+        return anim
+    }
+
 }
