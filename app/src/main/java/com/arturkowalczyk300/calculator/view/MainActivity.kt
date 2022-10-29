@@ -3,6 +3,9 @@ package com.arturkowalczyk300.calculator.view
 import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.text.Html
+import android.text.Spanned
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -157,6 +160,7 @@ class MainActivity : AppCompatActivity() {
 
                 viewModel.insertCalculationToHistory(exp, date, result)
 
+
             } catch (exc: Exception) {
                 Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
             }
@@ -165,6 +169,9 @@ class MainActivity : AppCompatActivity() {
 
         val cursorPosition = editTextExpression.selectionEnd
         editTextExpression.setText(viewModel.currentExpression)
+
+        if (tag == "=")
+            highlightText()
 
         if (!expressionClearedFlag) {
             if (!characterNotAddedFlag) {
@@ -219,10 +226,37 @@ class MainActivity : AppCompatActivity() {
         textViewLabelEqual.visibility = visibility
     }
 
-    private fun clickAnimation():AlphaAnimation{
+    private fun clickAnimation(): AlphaAnimation {
         val anim = AlphaAnimation(1.0f, 0.7f)
         anim.duration = 100
         return anim
+    }
+
+    private fun highlightText() {
+
+        editTextExpression.setText(
+            highlightAllSubstrings(
+                editTextExpression.text.toString(),
+                getAllNumbers(viewModel.currentExpression.toString())
+            )
+        )
+    }
+
+    private fun getAllNumbers(equation: String): List<String> {
+        val regex = Regex("""(-?[\d.]*)[+-/*]?""")
+        val match = regex.findAll(equation)
+        return match.map {
+            it.groups[1]!!.value
+        }.toList()
+    }
+
+    private fun highlightAllSubstrings(inputString: String, substrings: List<String>): Spanned {
+        var str = inputString
+        substrings.forEach {
+            if (it.isNotEmpty()) str =
+                str.replace(it, "<span style='background-color:yellow'>${it}</span>")
+        }
+        return Html.fromHtml(str)
     }
 
 }
