@@ -8,30 +8,34 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="0.05"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
         android:text="@string/calculations_history_title"
         android:textAlignment="center"
-        android:textSize="28sp"
-        android:layout_marginTop="20dp"
-        android:layout_marginBottom="40dp"/>
+        android:textSize="28sp" />
 
-    <ListView
-        android:id="@+id/dialog_lvCalculationsHistory"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        <ListView
+            android:layout_weight="0.8"
+            android:id="@+id/dialog_lvCalculationsHistory"
+            android:layout_width="match_parent"
+            android:layout_height="0dp" />
 
     <LinearLayout
         android:id="@+id/dialog_ll_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_weight="0.05"
         android:layout_marginTop="20dp"
-        android:gravity="center">
+        android:gravity="center"
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/dialog_btnDeleteAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableLeft="@drawable/delete"
-            android:visibility="gone"
-            android:text="@string/calculations_history_button_delete_all"/>
+            android:text="@string/calculations_history_button_delete_all"
+            android:visibility="gone" />
     </LinearLayout>
 </LinearLayout>
