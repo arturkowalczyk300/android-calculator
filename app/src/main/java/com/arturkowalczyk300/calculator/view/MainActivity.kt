@@ -4,7 +4,6 @@ import android.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
-import android.text.Spanned
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -22,6 +21,7 @@ import com.arturkowalczyk300.calculator.model.CalculationEntity
 import com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener.OnSelectionChangedListener
 import java.lang.Exception
 import java.util.*
+import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity() {
@@ -31,7 +31,10 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var viewModel: MainViewModel
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
-    private var editTextExpressionCursorCurrentIndex = 0
+    private var editTextExpressionCursorCurrentIndex by Delegates.observable(0) { property, oldValue, newValue ->
+
+        //callbackCursorPositionChanged(oldValue, newValue)
+    }
     private var editTextExpressionCursorLastNonZeroIndex = 0
     private lateinit var textViewResult: TextView
     private lateinit var textViewLabelEqual: TextView
@@ -54,6 +57,11 @@ class MainActivity : AppCompatActivity() {
                 if (editTextExpressionCursorCurrentIndex > 0)
                     editTextExpressionCursorLastNonZeroIndex = editTextExpressionCursorCurrentIndex
             }
+        }
+        editTextExpression.setOnClickListener {
+
+            Log.e("myApp", "&")
+            highlightNumberAtSpecifiedCursorPosition(editTextExpressionCursorCurrentIndex)
         }
 
         viewModel = ViewModelProvider(this)[MainViewModel::
@@ -167,11 +175,8 @@ class MainActivity : AppCompatActivity() {
             switchResultVisibility(true) //result ready
         }
 
-        val cursorPosition = editTextExpression.selectionEnd
+        var cursorPosition = editTextExpression.selectionEnd
         editTextExpression.setText(viewModel.currentExpression)
-
-        if (tag == "=")
-            highlightText()
 
         if (!expressionClearedFlag) {
             if (!characterNotAddedFlag) {
@@ -232,31 +237,53 @@ class MainActivity : AppCompatActivity() {
         return anim
     }
 
-    private fun highlightText() {
+    private fun getAllNumbers(equation: String): List<Pair<String, IntRange>> {
+        val listOfPairs = mutableListOf<Pair<String, IntRange>>()
+
+        val regex = Regex("""(-?[\d.]*)[+-/*]?""")
+        val match = regex.findAll(equation)
+
+        match.forEach {
+            listOfPairs.add(
+                Pair(
+                    it.groups[1]!!.value,
+                    it.groups[1]!!.range
+                )
+            )
+        }
+
+        return listOfPairs
+    }
+
+    private fun highlightNumberAtSpecifiedCursorPosition(cursorPosition: Int) {
+        val numbers = getAllNumbers(viewModel.currentExpression.toString())
+
+        Log.e("myApp", "numbers: ${numbers.joinToString()}")
+
+        val found = numbers.find {
+            cursorPosition >= it.second.first && cursorPosition <= it.second.last
+        }
+
+        Log.e("myApp", "found: $found")
+
+        if (found != null)
+            highlightSubstring(viewModel.currentExpression.toString(), found.first)
+    }
+
+    private fun highlightSubstring(inputString: String, substring: String) {
+        var str = inputString
+        str = inputString.replace(
+            substring,
+            "<span style='background-color:yellow'>${substring}</span>"
+        )
 
         editTextExpression.setText(
-            highlightAllSubstrings(
-                editTextExpression.text.toString(),
-                getAllNumbers(viewModel.currentExpression.toString())
-            )
+            Html.fromHtml(str)
         )
     }
 
-    private fun getAllNumbers(equation: String): List<String> {
-        val regex = Regex("""(-?[\d.]*)[+-/*]?""")
-        val match = regex.findAll(equation)
-        return match.map {
-            it.groups[1]!!.value
-        }.toList()
-    }
-
-    private fun highlightAllSubstrings(inputString: String, substrings: List<String>): Spanned {
-        var str = inputString
-        substrings.forEach {
-            if (it.isNotEmpty()) str =
-                str.replace(it, "<span style='background-color:yellow'>${it}</span>")
-        }
-        return Html.fromHtml(str)
+    private fun callbackCursorPositionChanged(oldPosition: Int, newPosition: Int) {
+        //Log.e("myApp", "cursor pos changed, old=$oldPosition, new=$newPosition")
     }
 
 }
