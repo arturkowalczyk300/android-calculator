@@ -7,6 +7,7 @@ import android.text.Html
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.widget.Button
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
     }
 
+    private var cursorPositionChangePending: Boolean = false
     private lateinit var viewModel: MainViewModel
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
     private var editTextExpressionCursorCurrentIndex by Delegates.observable(0) { property, oldValue, newValue ->
@@ -56,12 +58,22 @@ class MainActivity : AppCompatActivity() {
                 editTextExpressionCursorCurrentIndex = selEnd
                 if (editTextExpressionCursorCurrentIndex > 0)
                     editTextExpressionCursorLastNonZeroIndex = editTextExpressionCursorCurrentIndex
+
+                if (cursorPositionChangePending) {
+                    cursorPositionChangePending = false
+                    highlightNumberAtSpecifiedCursorPosition(editTextExpressionCursorCurrentIndex)
+                }
+                Log.e(
+                    "myApp",
+                    "changed &=${editTextExpressionCursorCurrentIndex}, ${editTextExpression.selectionStart},${editTextExpression.selectionEnd}"
+                )
             }
         }
-        editTextExpression.setOnClickListener {
-
-            Log.e("myApp", "&")
-            highlightNumberAtSpecifiedCursorPosition(editTextExpressionCursorCurrentIndex)
+        editTextExpression.setOnTouchListener { view: View, motionEvent: MotionEvent ->
+            //Log.e("myApp", "&=${editTextExpressionCursorCurrentIndex}, ${editTextExpression.selectionStart},${editTextExpression.selectionEnd}")
+            //highlightNumberAtSpecifiedCursorPosition(editTextExpressionCursorCurrentIndex)
+            cursorPositionChangePending = true
+            false //otherwise it is impossible to move cursor
         }
 
         viewModel = ViewModelProvider(this)[MainViewModel::
@@ -255,22 +267,20 @@ class MainActivity : AppCompatActivity() {
         return listOfPairs
     }
 
-    private fun highlightNumberAtSpecifiedCursorPosition(cursorPosition: Int) {
+    private fun highlightNumberAtSpecifiedCursorPosition(cursorPosition: Int) { //TODO: repair problem causing selecting impossible
         val numbers = getAllNumbers(viewModel.currentExpression.toString())
-
-        Log.e("myApp", "numbers: ${numbers.joinToString()}")
 
         val found = numbers.find {
             cursorPosition >= it.second.first && cursorPosition <= it.second.last
         }
-
-        Log.e("myApp", "found: $found")
 
         if (found != null)
             highlightSubstring(viewModel.currentExpression.toString(), found.first)
     }
 
     private fun highlightSubstring(inputString: String, substring: String) {
+        val sel = Pair(editTextExpression.selectionStart, editTextExpression.selectionEnd)
+
         var str = inputString
         str = inputString.replace(
             substring,
@@ -280,10 +290,7 @@ class MainActivity : AppCompatActivity() {
         editTextExpression.setText(
             Html.fromHtml(str)
         )
-    }
-
-    private fun callbackCursorPositionChanged(oldPosition: Int, newPosition: Int) {
-        //Log.e("myApp", "cursor pos changed, old=$oldPosition, new=$newPosition")
+        editTextExpression.setSelection(sel.first, sel.second)
     }
 
 }
