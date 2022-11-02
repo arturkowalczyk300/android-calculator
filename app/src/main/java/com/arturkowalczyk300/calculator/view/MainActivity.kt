@@ -2,13 +2,10 @@ package com.arturkowalczyk300.calculator.view
 
 import android.app.AlertDialog
 import android.graphics.Color
-import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Html
 import android.text.Spannable
 import android.text.style.BackgroundColorSpan
-import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -26,6 +23,7 @@ import com.arturkowalczyk300.calculator.R
 import com.arturkowalczyk300.calculator.model.CalculationEntity
 import com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener.OnSelectionChangedListener
 import java.lang.Exception
+import java.lang.StringBuilder
 import java.util.*
 import kotlin.properties.Delegates
 
@@ -35,6 +33,7 @@ class MainActivity : AppCompatActivity() {
         val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
     }
 
+    private var currentlySelectedNumberIndexRange = IntRange(-1, -1)
     private var span: BackgroundColorSpan? = null
     private var cursorPositionChangePending: Boolean = false
     private lateinit var viewModel: MainViewModel
@@ -190,10 +189,14 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
             }
             switchResultVisibility(true) //result ready
-        }
+        } else if (tag == "+/-")
+            invertSignOfCurrentlySelectedNumber(
+                currentlySelectedNumberIndexRange.first,
+                currentlySelectedNumberIndexRange.last
+            )
 
         var cursorPosition = editTextExpression.selectionEnd
-        editTextExpression.setText(viewModel.currentExpression)
+        editTextExpressionUpdate()
         if (editTextExpressionCursorCurrentIndex < editTextExpression.text.length - 2) {
             cursorPositionChangePending = true
         }
@@ -235,7 +238,7 @@ class MainActivity : AppCompatActivity() {
         (lv.adapter as CalculationsHistoryArrayAdapter).setItemOnClickListener { equation ->
             viewModel.currentExpression.clear()
             viewModel.currentExpression.append(equation)
-            editTextExpression.setText(viewModel.currentExpression.toString())
+            editTextExpressionUpdate()
             dialog?.dismiss()
         }
         (lv.adapter as CalculationsHistoryArrayAdapter).setDeleteButtonOnClickListener {
@@ -243,6 +246,10 @@ class MainActivity : AppCompatActivity() {
         }
 
         dialog?.show()
+    }
+
+    private fun editTextExpressionUpdate() {
+        editTextExpression.setText(viewModel.currentExpression)
     }
 
     private fun switchResultVisibility(visible: Boolean) {
@@ -278,20 +285,21 @@ class MainActivity : AppCompatActivity() {
     private fun highlightNumberAtSpecifiedCursorPosition(cursorPosition: Int) {
         val numbers = getAllNumbers(viewModel.currentExpression.toString())
 
-        var range = IntRange(-1, -1)
-
         val found = numbers.find {
-            range = it.second
+            currentlySelectedNumberIndexRange = it.second
             cursorPosition >= it.second.first && cursorPosition <= it.second.last
         }
 
         if (found != null)
-            highlightSubstring(viewModel.currentExpression.toString(), range.first, range.last + 1)
+            highlightSubstring(
+                currentlySelectedNumberIndexRange.first,
+                currentlySelectedNumberIndexRange.last + 1
+            )
         else
             editTextExpressionRemoveSpan()
     }
 
-    private fun highlightSubstring(inputString: String, startIndex: Int, endIndex: Int) {
+    private fun highlightSubstring(startIndex: Int, endIndex: Int) {
         if (startIndex == -1 || endIndex == -1)
             return
 
@@ -315,5 +323,16 @@ class MainActivity : AppCompatActivity() {
     private fun editTextExpressionRemoveSpan() {
         if (span != null)
             editTextExpression.text.removeSpan(span) //remove previously applied span
+    }
+
+    private fun invertSignOfCurrentlySelectedNumber(startIndex: Int, endIndex: Int) {
+        if (viewModel.currentExpression[startIndex] == '-') //negative number
+        {
+            viewModel.currentExpression =
+                StringBuilder(viewModel.currentExpression.removeRange(startIndex, startIndex + 1))
+        } else {
+            viewModel.currentExpression.insert(startIndex, "-")
+        }
+        editTextExpressionUpdate()
     }
 }
