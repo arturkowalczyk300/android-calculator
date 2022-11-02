@@ -1,9 +1,14 @@
 package com.arturkowalczyk300.calculator.view
 
 import android.app.AlertDialog
+import android.graphics.Color
+import android.graphics.Typeface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Html
+import android.text.Spannable
+import android.text.style.BackgroundColorSpan
+import android.text.style.StyleSpan
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
@@ -30,6 +35,7 @@ class MainActivity : AppCompatActivity() {
         val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
     }
 
+    private var span: BackgroundColorSpan? = null
     private var cursorPositionChangePending: Boolean = false
     private lateinit var viewModel: MainViewModel
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
@@ -61,17 +67,16 @@ class MainActivity : AppCompatActivity() {
 
                 if (cursorPositionChangePending) {
                     cursorPositionChangePending = false
-                    highlightNumberAtSpecifiedCursorPosition(editTextExpressionCursorCurrentIndex)
+                    if (editTextExpressionCursorCurrentIndex <= editTextExpression.text.lastIndex)
+                        highlightNumberAtSpecifiedCursorPosition(
+                            editTextExpressionCursorCurrentIndex
+                        )
+                    else
+                        editTextExpressionRemoveSpan()
                 }
-                Log.e(
-                    "myApp",
-                    "changed &=${editTextExpressionCursorCurrentIndex}, ${editTextExpression.selectionStart},${editTextExpression.selectionEnd}"
-                )
             }
         }
         editTextExpression.setOnTouchListener { view: View, motionEvent: MotionEvent ->
-            //Log.e("myApp", "&=${editTextExpressionCursorCurrentIndex}, ${editTextExpression.selectionStart},${editTextExpression.selectionEnd}")
-            //highlightNumberAtSpecifiedCursorPosition(editTextExpressionCursorCurrentIndex)
             cursorPositionChangePending = true
             false //otherwise it is impossible to move cursor
         }
@@ -189,6 +194,9 @@ class MainActivity : AppCompatActivity() {
 
         var cursorPosition = editTextExpression.selectionEnd
         editTextExpression.setText(viewModel.currentExpression)
+        if (editTextExpressionCursorCurrentIndex < editTextExpression.text.length - 2) {
+            cursorPositionChangePending = true
+        }
 
         if (!expressionClearedFlag) {
             if (!characterNotAddedFlag) {
@@ -267,30 +275,45 @@ class MainActivity : AppCompatActivity() {
         return listOfPairs
     }
 
-    private fun highlightNumberAtSpecifiedCursorPosition(cursorPosition: Int) { //TODO: repair problem causing selecting impossible
+    private fun highlightNumberAtSpecifiedCursorPosition(cursorPosition: Int) {
         val numbers = getAllNumbers(viewModel.currentExpression.toString())
 
+        var range = IntRange(-1, -1)
+
         val found = numbers.find {
+            range = it.second
             cursorPosition >= it.second.first && cursorPosition <= it.second.last
         }
 
         if (found != null)
-            highlightSubstring(viewModel.currentExpression.toString(), found.first)
+            highlightSubstring(viewModel.currentExpression.toString(), range.first, range.last + 1)
+        else
+            editTextExpressionRemoveSpan()
     }
 
-    private fun highlightSubstring(inputString: String, substring: String) {
-        val sel = Pair(editTextExpression.selectionStart, editTextExpression.selectionEnd)
+    private fun highlightSubstring(inputString: String, startIndex: Int, endIndex: Int) {
+        if (startIndex == -1 || endIndex == -1)
+            return
 
-        var str = inputString
-        str = inputString.replace(
-            substring,
-            "<span style='background-color:yellow'>${substring}</span>"
-        )
-
-        editTextExpression.setText(
-            Html.fromHtml(str)
-        )
-        editTextExpression.setSelection(sel.first, sel.second)
+        editTextExpressionSetSpan(startIndex, endIndex)
     }
 
+    private fun editTextExpressionSetSpan(startIndex: Int, endIndex: Int) {
+        if (span == null)
+            span = BackgroundColorSpan(Color.argb(30, 0, 0, 255))
+
+        editTextExpressionRemoveSpan()
+
+        editTextExpression.text.setSpan(
+            span!!,
+            startIndex,
+            endIndex,
+            Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+        )
+    }
+
+    private fun editTextExpressionRemoveSpan() {
+        if (span != null)
+            editTextExpression.text.removeSpan(span) //remove previously applied span
+    }
 }
