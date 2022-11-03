@@ -2,7 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/main_options_menu_toggle_advanced_operations"
+        android:title="@string/menu_advanced_operations_off"
+        app:showAsAction="always"
+        android:checkable="true"/>
+    <item
         android:id="@+id/main_options_menu_history"
-        android:title="History"
+        android:title="@string/menu_history"
         app:showAsAction="ifRoom"/>
 </menu>

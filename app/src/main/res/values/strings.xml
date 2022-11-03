@@ -4,4 +4,7 @@
     <string name="calculations_history_button_delete">Delete</string>
     <string name="calculations_history_button_delete_all">Delete all</string>
     <string name="htmltest"><span style='background-color:yellow'>cdxszfdsxfvsdx</span></string>
+    <string name="menu_advanced_operations_off">Enable adv. oper.</string>
+    <string name="menu_history">History</string>
+    <string name="menu_advanced_operations_on">Disable adv. oper.</string>
 </resources>

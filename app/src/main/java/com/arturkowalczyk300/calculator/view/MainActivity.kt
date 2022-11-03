@@ -2,19 +2,17 @@ package com.arturkowalczyk300.calculator.view
 
 import android.app.AlertDialog
 import android.content.res.Configuration
-import android.content.res.Resources
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.BackgroundColorSpan
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -40,8 +38,8 @@ class MainActivity : AppCompatActivity() {
     private var cursorPositionChangePending: Boolean = false
     private lateinit var viewModel: MainViewModel
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
+    private lateinit var llAdvancedOperations: LinearLayout
     private var editTextExpressionCursorCurrentIndex by Delegates.observable(0) { property, oldValue, newValue ->
-
         //callbackCursorPositionChanged(oldValue, newValue)
     }
     private var editTextExpressionCursorLastNonZeroIndex = 0
@@ -50,6 +48,8 @@ class MainActivity : AppCompatActivity() {
 
     private var listOfHistoricalCalculations: List<CalculationEntity>? = null
 
+    private var optionsMenu: Menu? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -57,6 +57,10 @@ class MainActivity : AppCompatActivity() {
         editTextExpression = findViewById(R.id.editTextExpression)
         textViewResult = findViewById(R.id.tvResult)
         textViewLabelEqual = findViewById(R.id.tvLabelEqual)
+
+        llAdvancedOperations = findViewById<LinearLayout?>(R.id.llAdvancedOperations).apply {
+            visibility = View.GONE
+        }
 
         editTextExpression.showSoftInputOnFocus = false //disable popup keyboard on view select
 
@@ -97,6 +101,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.main_options_menu, menu)
+        optionsMenu = menu
         return true
     }
 
@@ -104,6 +109,24 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.main_options_menu_history -> {
                 displayCalculationsHistoryDialog()
+                true
+            }
+            R.id.main_options_menu_toggle_advanced_operations -> {
+                val advancedOperations =
+                    optionsMenu?.findItem(R.id.main_options_menu_toggle_advanced_operations)
+                when (advancedOperations?.title) {
+                    getString(R.string.menu_advanced_operations_on) -> {
+                        advancedOperations?.title =
+                            getString(R.string.menu_advanced_operations_off)
+                        llAdvancedOperations.visibility = View.GONE
+                    }
+                    getString(R.string.menu_advanced_operations_off) -> {
+                        advancedOperations?.title =
+                            getString(R.string.menu_advanced_operations_on)
+                        llAdvancedOperations.visibility = View.VISIBLE
+                    }
+                }
+
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -191,11 +214,20 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
             }
             switchResultVisibility(true) //result ready
-        } else if (tag == "+/-")
+        } else if (tag == "+/-") {
             invertSignOfCurrentlySelectedNumber(
                 currentlySelectedNumberIndexRange.first,
                 currentlySelectedNumberIndexRange.last
             )
+        } else if (tag == "(") {
+            viewModel.currentExpression.insert(currentIndex, "(")
+        } else if (tag == ")") {
+            viewModel.currentExpression.insert(currentIndex, ")")
+        } else if (tag == "^") {
+            viewModel.currentExpression.insert(currentIndex, "^")
+        } else if (tag == "sqrt") {
+            viewModel.currentExpression.insert(currentIndex, "sqrt")
+        }
 
         var cursorPosition = editTextExpression.selectionEnd
         editTextExpressionUpdate()
@@ -315,7 +347,6 @@ class MainActivity : AppCompatActivity() {
                 false -> BackgroundColorSpan(resources.getColor(R.color.selectedNumberBackgroundLightMode))
             }
         }
-
 
         editTextExpressionRemoveSpan()
 
