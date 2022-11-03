@@ -1,6 +1,8 @@
 package com.arturkowalczyk300.calculator.view
 
 import android.app.AlertDialog
+import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -307,8 +309,13 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun editTextExpressionSetSpan(startIndex: Int, endIndex: Int) {
-        if (span == null)
-            span = BackgroundColorSpan(Color.argb(30, 0, 0, 255))
+        if (span == null) {
+            span = when (isSystemDarkModeSet()) {
+                true -> BackgroundColorSpan(resources.getColor(R.color.selectedNumberBackgroundDarkMode))
+                false -> BackgroundColorSpan(resources.getColor(R.color.selectedNumberBackgroundLightMode))
+            }
+        }
+
 
         editTextExpressionRemoveSpan()
 
@@ -334,5 +341,9 @@ class MainActivity : AppCompatActivity() {
             viewModel.currentExpression.insert(startIndex, "-")
         }
         editTextExpressionUpdate()
+    }
+
+    private fun isSystemDarkModeSet(): Boolean {
+        return resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
     }
 }

@@ -12,4 +12,6 @@
     <color name="numberButton">#6D888F</color>
     <color name="actionButton">#034050</color>
     <color name="actionButtonsText">#D1C4E9</color>
+    <color name="selectedNumberBackgroundLightMode">#4D0000FF</color>
+    <color name="selectedNumberBackgroundDarkMode">#4D2BA4C8</color>
 </resources>
