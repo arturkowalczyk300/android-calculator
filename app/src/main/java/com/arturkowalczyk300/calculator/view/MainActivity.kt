@@ -1,5 +1,7 @@
 package com.arturkowalczyk300.calculator.view
 
+import android.animation.Animator
+import android.animation.Animator.AnimatorListener
 import android.app.AlertDialog
 import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
@@ -11,6 +13,7 @@ import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AlphaAnimation
+import android.view.animation.Animation.AnimationListener
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -118,12 +121,12 @@ class MainActivity : AppCompatActivity() {
                     getString(R.string.menu_advanced_operations_on) -> {
                         advancedOperations?.title =
                             getString(R.string.menu_advanced_operations_off)
-                        llAdvancedOperations.visibility = View.GONE
+                        hideAdvancedOperationsButtons()
                     }
                     getString(R.string.menu_advanced_operations_off) -> {
                         advancedOperations?.title =
                             getString(R.string.menu_advanced_operations_on)
-                        llAdvancedOperations.visibility = View.VISIBLE
+                        showAdvancedOperationsButtons()
                     }
                 }
 
@@ -376,5 +379,48 @@ class MainActivity : AppCompatActivity() {
 
     private fun isSystemDarkModeSet(): Boolean {
         return resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+    }
+
+    private fun showAdvancedOperationsButtons() {
+        llAdvancedOperations.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+
+            animate()
+                .alpha(1f)
+                .setDuration(resources.getInteger(R.integer.animation_durations_ms).toLong())
+                .setListener(null)
+        }
+    }
+
+    private fun hideAdvancedOperationsButtons() {
+        llAdvancedOperations.apply {
+            alpha = 1f
+
+            animate()
+                .alpha(0f)
+                .setDuration(resources.getInteger(R.integer.animation_durations_ms).toLong())
+                .setListener(object : AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {
+
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
+                        super.onAnimationEnd(animation, isReverse)
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        llAdvancedOperations.visibility = View.GONE
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {
+
+                    }
+
+                    override fun onAnimationRepeat(animation: Animator?) {
+
+                    }
+                })
+        }
     }
 }
