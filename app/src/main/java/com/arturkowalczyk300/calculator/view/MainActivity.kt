@@ -8,12 +8,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.BackgroundColorSpan
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AlphaAnimation
-import android.view.animation.Animation.AnimationListener
 import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.ListView
@@ -24,16 +24,16 @@ import androidx.lifecycle.ViewModelProvider
 import com.arturkowalczyk300.calculator.viewmodel.MainViewModel
 import com.arturkowalczyk300.calculator.R
 import com.arturkowalczyk300.calculator.model.CalculationEntity
+import com.arturkowalczyk300.calculator.other.preferences.SharedPreferencesHelper
 import com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener.OnSelectionChangedListener
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.util.*
-import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
+        const val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
     }
 
     private var currentlySelectedNumberIndexRange = IntRange(-1, -1)
@@ -42,21 +42,24 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewModel: MainViewModel
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
     private lateinit var llAdvancedOperations: LinearLayout
-    private var editTextExpressionCursorCurrentIndex by Delegates.observable(0) { property, oldValue, newValue ->
-        //callbackCursorPositionChanged(oldValue, newValue)
-    }
+    private var editTextExpressionCursorCurrentIndex = 0
     private var editTextExpressionCursorLastNonZeroIndex = 0
     private lateinit var textViewResult: TextView
     private lateinit var textViewLabelEqual: TextView
 
     private var listOfHistoricalCalculations: List<CalculationEntity>? = null
 
+    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     private var optionsMenu: Menu? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //shared preferences
+        sharedPreferencesHelper = SharedPreferencesHelper(applicationContext)
+
+        //bind views
         editTextExpression = findViewById(R.id.editTextExpression)
         textViewResult = findViewById(R.id.tvResult)
         textViewLabelEqual = findViewById(R.id.tvLabelEqual)
@@ -105,6 +108,12 @@ class MainActivity : AppCompatActivity() {
         val inflater = menuInflater
         inflater.inflate(R.menu.main_options_menu, menu)
         optionsMenu = menu
+
+        //set correct text
+        val advancedOperationsMenuItem =
+            optionsMenu?.findItem(R.id.main_options_menu_toggle_advanced_operations)
+        setAdvancedOperationsButtonsVisibility(advancedOperationsMenuItem, true)
+
         return true
     }
 
@@ -115,25 +124,53 @@ class MainActivity : AppCompatActivity() {
                 true
             }
             R.id.main_options_menu_toggle_advanced_operations -> {
-                val advancedOperations =
+                val advancedOperationsMenuItem =
                     optionsMenu?.findItem(R.id.main_options_menu_toggle_advanced_operations)
-                when (advancedOperations?.title) {
-                    getString(R.string.menu_advanced_operations_on) -> {
-                        advancedOperations?.title =
-                            getString(R.string.menu_advanced_operations_off)
-                        hideAdvancedOperationsButtons()
-                    }
-                    getString(R.string.menu_advanced_operations_off) -> {
-                        advancedOperations?.title =
-                            getString(R.string.menu_advanced_operations_on)
-                        showAdvancedOperationsButtons()
-                    }
-                }
+
+                setAdvancedOperationsButtonsVisibility(advancedOperationsMenuItem)
 
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun setAdvancedOperationsButtonsVisibility(
+        menuItem: MenuItem?,
+        loadFromSettings: Boolean = false
+    ) {
+
+        if (menuItem == null)
+            return
+
+        var advancedOperationsEnabled = when {
+            loadFromSettings ->
+                sharedPreferencesHelper.isAdvancedOperationsModeEnabled()
+            else -> when (menuItem.title) {
+                getString(R.string.menu_advanced_operations_on) -> false //hide
+                getString(R.string.menu_advanced_operations_off) -> true //show
+                else -> false //should never be executed
+            }
+        }
+
+        when (advancedOperationsEnabled) {
+            false -> {
+                menuItem.title =
+                    getString(R.string.menu_advanced_operations_off)
+                hideAdvancedOperationsButtons()
+            }
+            true -> {
+                menuItem.title =
+                    getString(R.string.menu_advanced_operations_on)
+                showAdvancedOperationsButtons()
+            }
+        }
+        savePreferenceAdvancedOperationEnabled(advancedOperationsEnabled)
+
+    }
+
+    private fun savePreferenceAdvancedOperationEnabled(enabled: Boolean) {
+        sharedPreferencesHelper.setAdvancedOperationsModeEnabled(enabled)
     }
 
     fun buttonOnClickListener(view: View) {
@@ -229,7 +266,10 @@ class MainActivity : AppCompatActivity() {
         } else if (tag == "^") {
             viewModel.currentExpression.insert(currentIndex, "^")
         } else if (tag == "sqrt") {
-            viewModel.currentExpression.insert(currentIndex, "sqrt")
+            val prevSel = editTextExpression.selectionEnd
+            viewModel.currentExpression.insert(currentIndex, "sqrt(")
+            editTextExpressionUpdate()
+            editTextExpression.setSelection(prevSel + 4)
         }
 
         var cursorPosition = editTextExpression.selectionEnd
