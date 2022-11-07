@@ -62,6 +62,38 @@
         android:padding="10dp">
         <!-- first row -->
         <LinearLayout
+            android:id="@+id/llAdvancedOperations"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/advancedNumberButtonStyle"
+                android:onClick="buttonOnClickListener"
+                android:tag="("
+                android:text="(" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/advancedNumberButtonStyle"
+                android:onClick="buttonOnClickListener"
+                android:tag=")"
+                android:text=")" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/advancedNumberButtonStyle"
+                android:onClick="buttonOnClickListener"
+                android:tag="^"
+                android:text="x^y" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                style="@style/advancedNumberButtonStyle"
+                android:onClick="buttonOnClickListener"
+                android:tag="sqrt"
+                android:text="sqrt" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

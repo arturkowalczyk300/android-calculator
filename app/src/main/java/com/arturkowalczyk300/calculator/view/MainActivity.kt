@@ -1,9 +1,9 @@
 package com.arturkowalczyk300.calculator.view
 
+import android.animation.Animator
+import android.animation.Animator.AnimatorListener
 import android.app.AlertDialog
 import android.content.res.Configuration
-import android.content.res.Resources
-import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
@@ -15,6 +15,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AlphaAnimation
 import android.widget.Button
+import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
@@ -23,16 +24,16 @@ import androidx.lifecycle.ViewModelProvider
 import com.arturkowalczyk300.calculator.viewmodel.MainViewModel
 import com.arturkowalczyk300.calculator.R
 import com.arturkowalczyk300.calculator.model.CalculationEntity
+import com.arturkowalczyk300.calculator.other.preferences.SharedPreferencesHelper
 import com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener.OnSelectionChangedListener
 import java.lang.Exception
 import java.lang.StringBuilder
 import java.util.*
-import kotlin.properties.Delegates
 
 
 class MainActivity : AppCompatActivity() {
     companion object {
-        val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
+        const val DIALOG_CALCULATIONS_HISTORY_TAG = "CUSTOM_DIALOG_CALCULATIONS_HISTORY"
     }
 
     private var currentlySelectedNumberIndexRange = IntRange(-1, -1)
@@ -40,23 +41,32 @@ class MainActivity : AppCompatActivity() {
     private var cursorPositionChangePending: Boolean = false
     private lateinit var viewModel: MainViewModel
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
-    private var editTextExpressionCursorCurrentIndex by Delegates.observable(0) { property, oldValue, newValue ->
-
-        //callbackCursorPositionChanged(oldValue, newValue)
-    }
+    private lateinit var llAdvancedOperations: LinearLayout
+    private var editTextExpressionCursorCurrentIndex = 0
     private var editTextExpressionCursorLastNonZeroIndex = 0
     private lateinit var textViewResult: TextView
     private lateinit var textViewLabelEqual: TextView
 
     private var listOfHistoricalCalculations: List<CalculationEntity>? = null
 
+    private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
+    private var optionsMenu: Menu? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        //shared preferences
+        sharedPreferencesHelper = SharedPreferencesHelper(applicationContext)
+
+        //bind views
         editTextExpression = findViewById(R.id.editTextExpression)
         textViewResult = findViewById(R.id.tvResult)
         textViewLabelEqual = findViewById(R.id.tvLabelEqual)
+
+        llAdvancedOperations = findViewById<LinearLayout?>(R.id.llAdvancedOperations).apply {
+            visibility = View.GONE
+        }
 
         editTextExpression.showSoftInputOnFocus = false //disable popup keyboard on view select
 
@@ -97,6 +107,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         val inflater = menuInflater
         inflater.inflate(R.menu.main_options_menu, menu)
+        optionsMenu = menu
+
+        //set correct text
+        val advancedOperationsMenuItem =
+            optionsMenu?.findItem(R.id.main_options_menu_toggle_advanced_operations)
+        setAdvancedOperationsButtonsVisibility(advancedOperationsMenuItem, true)
+
         return true
     }
 
@@ -106,8 +123,54 @@ class MainActivity : AppCompatActivity() {
                 displayCalculationsHistoryDialog()
                 true
             }
+            R.id.main_options_menu_toggle_advanced_operations -> {
+                val advancedOperationsMenuItem =
+                    optionsMenu?.findItem(R.id.main_options_menu_toggle_advanced_operations)
+
+                setAdvancedOperationsButtonsVisibility(advancedOperationsMenuItem)
+
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun setAdvancedOperationsButtonsVisibility(
+        menuItem: MenuItem?,
+        loadFromSettings: Boolean = false
+    ) {
+
+        if (menuItem == null)
+            return
+
+        var advancedOperationsEnabled = when {
+            loadFromSettings ->
+                sharedPreferencesHelper.isAdvancedOperationsModeEnabled()
+            else -> when (menuItem.title) {
+                getString(R.string.menu_advanced_operations_on) -> false //hide
+                getString(R.string.menu_advanced_operations_off) -> true //show
+                else -> false //should never be executed
+            }
+        }
+
+        when (advancedOperationsEnabled) {
+            false -> {
+                menuItem.title =
+                    getString(R.string.menu_advanced_operations_off)
+                hideAdvancedOperationsButtons()
+            }
+            true -> {
+                menuItem.title =
+                    getString(R.string.menu_advanced_operations_on)
+                showAdvancedOperationsButtons()
+            }
+        }
+        savePreferenceAdvancedOperationEnabled(advancedOperationsEnabled)
+
+    }
+
+    private fun savePreferenceAdvancedOperationEnabled(enabled: Boolean) {
+        sharedPreferencesHelper.setAdvancedOperationsModeEnabled(enabled)
     }
 
     fun buttonOnClickListener(view: View) {
@@ -191,11 +254,23 @@ class MainActivity : AppCompatActivity() {
                 Toast.makeText(applicationContext, exc.toString(), Toast.LENGTH_LONG).show()
             }
             switchResultVisibility(true) //result ready
-        } else if (tag == "+/-")
+        } else if (tag == "+/-") {
             invertSignOfCurrentlySelectedNumber(
                 currentlySelectedNumberIndexRange.first,
                 currentlySelectedNumberIndexRange.last
             )
+        } else if (tag == "(") {
+            viewModel.currentExpression.insert(currentIndex, "(")
+        } else if (tag == ")") {
+            viewModel.currentExpression.insert(currentIndex, ")")
+        } else if (tag == "^") {
+            viewModel.currentExpression.insert(currentIndex, "^")
+        } else if (tag == "sqrt") {
+            val prevSel = editTextExpression.selectionEnd
+            viewModel.currentExpression.insert(currentIndex, "sqrt(")
+            editTextExpressionUpdate()
+            editTextExpression.setSelection(prevSel + 4)
+        }
 
         var cursorPosition = editTextExpression.selectionEnd
         editTextExpressionUpdate()
@@ -316,7 +391,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-
         editTextExpressionRemoveSpan()
 
         editTextExpression.text.setSpan(
@@ -345,5 +419,48 @@ class MainActivity : AppCompatActivity() {
 
     private fun isSystemDarkModeSet(): Boolean {
         return resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_YES
+    }
+
+    private fun showAdvancedOperationsButtons() {
+        llAdvancedOperations.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+
+            animate()
+                .alpha(1f)
+                .setDuration(resources.getInteger(R.integer.animation_durations_ms).toLong())
+                .setListener(null)
+        }
+    }
+
+    private fun hideAdvancedOperationsButtons() {
+        llAdvancedOperations.apply {
+            alpha = 1f
+
+            animate()
+                .alpha(0f)
+                .setDuration(resources.getInteger(R.integer.animation_durations_ms).toLong())
+                .setListener(object : AnimatorListener {
+                    override fun onAnimationStart(animation: Animator?) {
+
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
+                        super.onAnimationEnd(animation, isReverse)
+                    }
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        llAdvancedOperations.visibility = View.GONE
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {
+
+                    }
+
+                    override fun onAnimationRepeat(animation: Animator?) {
+
+                    }
+                })
+        }
     }
 }
