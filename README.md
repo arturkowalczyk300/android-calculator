@@ -10,5 +10,7 @@ It also has advanced mode - after enabling it by clicking button on app bar opti
 # Install
 Download and install Calculator_*.apk file from **Releases** section (*install from unknown sources* option must be enabled in settings of Android system).
 
-# Demo
+# Demo    
+**Attached GIF files have big size, it may take a longer while to be loaded.**<br/></br>
+
 <img src="res/Calculator_light_theme.gif" alt="Light theme" width="40%" height="40%"> &emsp; <img src="res/Calculator_dark_theme.gif" alt="Dark theme" width="40%" height="40%">
