@@ -36,29 +36,29 @@ class DialogCalculationsHistoryTest {
 
     @Test
     fun test_openList() {
-        onView(ViewMatchers.withId(R.id.main_options_menu_history))
+        onView(withId(R.id.main_options_menu_history))
             .perform(click())
 
-        onView(ViewMatchers.withTagValue(`is`(MainActivity.DIALOG_CALCULATIONS_HISTORY_TAG)))
+        onView(withTagValue(`is`(MainActivity.DIALOG_CALCULATIONS_HISTORY_TAG)))
             .check(matches(isDisplayed()))
 
     }
 
     @Test
     fun test_add_calculation_to_history_and_restore_later() {
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("+")))
+        onView(withTagValue(`is`("+")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
-            .perform(click())
-
-        onView(ViewMatchers.withTagValue(`is`("AC")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
 
-        onView(ViewMatchers.withId(R.id.main_options_menu_history))
+        onView(withTagValue(`is`("AC")))
+            .perform(click())
+
+        onView(withId(R.id.main_options_menu_history))
             .perform(click())
 
         onData(
@@ -73,16 +73,16 @@ class DialogCalculationsHistoryTest {
 
     @Test
     fun test_add_calculation_to_history_and_delete_it() {
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("+")))
+        onView(withTagValue(`is`("+")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
 
-        onView(ViewMatchers.withId(R.id.main_options_menu_history))
+        onView(withId(R.id.main_options_menu_history))
             .perform(click())
 
         onData(
@@ -111,24 +111,24 @@ class DialogCalculationsHistoryTest {
 
     @Test
     fun test_add_calculations_to_history_and_delete_all() {
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("+")))
+        onView(withTagValue(`is`("+")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("AC")))
+        onView(withTagValue(`is`("AC")))
             .perform(click())
 
-        onView(ViewMatchers.withTagValue(`is`("6")))
+        onView(withTagValue(`is`("6")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("*")))
+        onView(withTagValue(`is`("*")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("2")))
+        onView(withTagValue(`is`("2")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
 
         onView(withId(R.id.main_options_menu_history)).perform(click())

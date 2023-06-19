@@ -7,8 +7,8 @@ import android.widget.EditText
 
 @SuppressLint("AppCompatCustomView")
 class EditTextWithSelectionChangedListener : EditText {
-    public interface OnSelectionChangedListener{
-        fun onSelectionChanged(selStart:Int, selEnd: Int);
+    interface OnSelectionChangedListener{
+        fun onSelectionChanged(selStart:Int, selEnd: Int)
     }
 
     var onSelectionChangedListener: OnSelectionChangedListener? = null
@@ -33,4 +33,8 @@ class EditTextWithSelectionChangedListener : EditText {
         onSelectionChangedListener?.onSelectionChanged(selStart, selEnd)
     }
 
+    override fun performClick(): Boolean {
+        super.performClick()
+        return true
+    }
 }

@@ -89,6 +89,7 @@ class MainActivity : AppCompatActivity() {
         }
         editTextExpression.setOnTouchListener { view: View, motionEvent: MotionEvent ->
             cursorPositionChangePending = true
+            view.performClick()
             false //otherwise it is impossible to move cursor
         }
 
@@ -290,7 +291,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun displayCalculationsHistoryDialog() {
 
-        val builder: AlertDialog.Builder? =
+        val builder: AlertDialog.Builder =
             AlertDialog.Builder(this, R.style.custom_calculations_history_dialog_style)
         val view = layoutInflater.inflate(R.layout.custom_calculations_history_dialog, null)
             .apply {
@@ -319,7 +320,7 @@ class MainActivity : AppCompatActivity() {
             dialog?.dismiss()
         }
         (lv.adapter as CalculationsHistoryArrayAdapter).setDeleteButtonOnClickListener {
-            viewModel.deleteCalculationHistoryEntity(it!!)
+            viewModel.deleteCalculationHistoryEntity(it)
         }
 
         dialog?.show()

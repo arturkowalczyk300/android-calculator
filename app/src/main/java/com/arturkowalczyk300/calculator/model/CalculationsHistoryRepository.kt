@@ -9,7 +9,7 @@ import androidx.room.Room
 import kotlinx.coroutines.runBlocking
 import java.util.*
 
-class CalculationsHistoryRepository() {
+class CalculationsHistoryRepository {
     private var database: CalculationsHistoryDatabase? = null
     private var dao: CalculationsHistoryDAO? = null
 
