@@ -34,7 +34,7 @@
             android:id="@+id/dialog_btnDeleteAll"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:drawableLeft="@drawable/delete"
+            android:drawableStart="@drawable/delete"
             android:text="@string/calculations_history_button_delete_all"
             android:visibility="gone" />
     </LinearLayout>

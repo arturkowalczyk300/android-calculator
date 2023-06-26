@@ -8,7 +8,6 @@
     tools:context=".view.MainActivity">
 
     <LinearLayout
-        android:id="@+id/llEquation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -24,7 +23,6 @@
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/llResult"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -33,12 +31,13 @@
             android:id="@+id/tvLabelEqual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
             android:layout_marginTop="20dp"
             android:text="="
             android:textSize="40sp"
             android:visibility="gone"
-            tools:visibility="visible" />
+            tools:visibility="visible"
+            tools:ignore="HardcodedText" />
 
         <TextView
             android:id="@+id/tvResult"
@@ -71,25 +70,29 @@
                 style="@style/advancedNumberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="("
-                android:text="(" />
+                android:text="("
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/advancedNumberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag=")"
-                android:text=")" />
+                android:text=")"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/advancedNumberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="^"
-                android:text="x^y" />
+                android:text="x^y"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/advancedNumberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="sqrt"
-                android:text="sqrt" />
+                android:text="sqrt"
+                tools:ignore="HardcodedText" />
 
         </LinearLayout>
 
@@ -102,25 +105,29 @@
                 style="@style/actionRemoveAllButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="AC"
-                android:text="AC" />
+                android:text="AC"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionRemoveOneCharacterButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="DEL"
-                android:text="DEL" />
+                android:text="DEL"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="%"
-                android:text="%" />
+                android:text="%"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="/"
-                android:text="/" />
+                android:text="/"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <!-- second row -->
@@ -133,25 +140,29 @@
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="7"
-                android:text="7" />
+                android:text="7"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="8"
-                android:text="8" />
+                android:text="8"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="9"
-                android:text="9" />
+                android:text="9"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="*"
-                android:text="*" />
+                android:text="*"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <!-- third row -->
@@ -164,25 +175,29 @@
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="4"
-                android:text="4" />
+                android:text="4"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="5"
-                android:text="5" />
+                android:text="5"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="6"
-                android:text="6" />
+                android:text="6"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="-"
-                android:text="-" />
+                android:text="-"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <!-- fourth row -->
@@ -195,25 +210,29 @@
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="1"
-                android:text="1" />
+                android:text="1"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="2"
-                android:text="2" />
+                android:text="2"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="3"
-                android:text="3" />
+                android:text="3"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="+"
-                android:text="+" />
+                android:text="+"
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
         <!-- fifth row -->
@@ -226,25 +245,29 @@
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="+/-"
-                android:text="+/-" />
+                android:text="+/-"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="0"
-                android:text="0" />
+                android:text="0"
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/numberButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="."
-                android:text="." />
+                android:text="."
+                tools:ignore="HardcodedText" />
 
             <androidx.appcompat.widget.AppCompatButton
                 style="@style/actionEqualButtonStyle"
                 android:onClick="buttonOnClickListener"
                 android:tag="="
-                android:text="=" />
+                android:text="="
+                tools:ignore="HardcodedText" />
         </LinearLayout>
 
 
