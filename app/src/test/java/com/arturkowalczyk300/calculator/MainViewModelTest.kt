@@ -21,7 +21,7 @@ class MainViewModelTest {
     }
 
     @Test
-    fun calculateResultSubstract() {
+    fun calculateResultSubtract() {
         val result: Double = myViewModel.calculateResult("4-5.5")
         assertEquals(-1.5, result, 0.0001)
     }

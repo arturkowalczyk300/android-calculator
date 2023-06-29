@@ -13,26 +13,25 @@ import java.util.*
 
 class MainViewModel : ViewModel() {
     var currentExpression: StringBuilder = StringBuilder()
-    private var repository: CalculationsHistoryRepository
-
-    init {
-        repository = CalculationsHistoryRepository()
-    }
+    private var repository: CalculationsHistoryRepository = CalculationsHistoryRepository()
 
     fun initDatabase(context: Context) {
         repository.initDatabase(context)
     }
 
-    fun calculateResult(expression: String, currentDate: Date = Date(0)): Double {
+    fun calculateResult(expression: String): Double {
         val exp: Expression =
             ExpressionBuilder(expression)
                 .build()
-        val result = exp.evaluate()
 
-        return result
+        return exp.evaluate()
     }
 
-    fun insertCalculationToHistory(expression: String, currentDate: Date = Date(0), result:Double){
+    fun insertCalculationToHistory(
+        expression: String,
+        currentDate: Date = Date(0),
+        result: Double,
+    ) {
         repository.insertCalculationHistoryEntity(
             CalculationEntity(
                 expression,
@@ -42,6 +41,7 @@ class MainViewModel : ViewModel() {
         )
     }
 
+    @Suppress("BooleanMethodIsAlwaysInverted")
     fun isStringOperator(expression: String): Boolean {
         var isOperator = false
 
@@ -56,6 +56,7 @@ class MainViewModel : ViewModel() {
         return isOperator
     }
 
+    @Suppress("BooleanMethodIsAlwaysInverted")
     fun isStringNumber(expression: String): Boolean {
         var isNumber = true // init value
 
@@ -71,10 +72,6 @@ class MainViewModel : ViewModel() {
         return repository.getAllCalculationHistoryEntities()
     }
 
-
-    fun deleteCalculationHistoryEntity(entity: CalculationEntity) {
-        repository.deleteCalculationHistoryEntity(entity)
-    }
 
     fun deleteCalculationHistoryEntity(entityEquation: String) {
         repository.deleteCalculationHistoryEntity(entityEquation)

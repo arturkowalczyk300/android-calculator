@@ -4,11 +4,9 @@ import android.animation.Animator
 import android.animation.Animator.AnimatorListener
 import android.app.AlertDialog
 import android.content.res.Configuration
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Spannable
 import android.text.style.BackgroundColorSpan
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.MotionEvent
@@ -19,16 +17,14 @@ import android.widget.LinearLayout
 import android.widget.ListView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.lifecycle.Observer
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
-import com.arturkowalczyk300.calculator.viewmodel.MainViewModel
 import com.arturkowalczyk300.calculator.R
 import com.arturkowalczyk300.calculator.model.CalculationEntity
 import com.arturkowalczyk300.calculator.other.preferences.SharedPreferencesHelper
 import com.arturkowalczyk300.calculator.view.EditTextWithSelectionChangedListener.OnSelectionChangedListener
-import java.lang.Exception
-import java.lang.StringBuilder
-import java.util.*
+import com.arturkowalczyk300.calculator.viewmodel.MainViewModel
+import java.util.Date
 
 
 class MainActivity : AppCompatActivity() {
@@ -43,7 +39,6 @@ class MainActivity : AppCompatActivity() {
     private lateinit var editTextExpression: EditTextWithSelectionChangedListener
     private lateinit var llAdvancedOperations: LinearLayout
     private var editTextExpressionCursorCurrentIndex = 0
-    private var editTextExpressionCursorLastNonZeroIndex = 0
     private lateinit var textViewResult: TextView
     private lateinit var textViewLabelEqual: TextView
 
@@ -73,8 +68,6 @@ class MainActivity : AppCompatActivity() {
         editTextExpression.onSelectionChangedListener = object : OnSelectionChangedListener {
             override fun onSelectionChanged(selStart: Int, selEnd: Int) {
                 editTextExpressionCursorCurrentIndex = selEnd
-                if (editTextExpressionCursorCurrentIndex > 0)
-                    editTextExpressionCursorLastNonZeroIndex = editTextExpressionCursorCurrentIndex
 
                 if (cursorPositionChangePending) {
                     cursorPositionChangePending = false
@@ -100,9 +93,9 @@ class MainActivity : AppCompatActivity() {
         viewModel.initDatabase(applicationContext)
 
         //observe livedata
-        viewModel.getAllCalculationHistoryEntities().observe(this, Observer {
+        viewModel.getAllCalculationHistoryEntities().observe(this) {
             listOfHistoricalCalculations = it
-        })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -144,7 +137,7 @@ class MainActivity : AppCompatActivity() {
         if (menuItem == null)
             return
 
-        var advancedOperationsEnabled = when {
+        val advancedOperationsEnabled = when {
             loadFromSettings ->
                 sharedPreferencesHelper.isAdvancedOperationsModeEnabled()
             else -> when (menuItem.title) {
@@ -174,7 +167,7 @@ class MainActivity : AppCompatActivity() {
         sharedPreferencesHelper.setAdvancedOperationsModeEnabled(enabled)
     }
 
-    fun buttonOnClickListener(view: View) {
+    fun buttonOnClickListener(view: View) { //TODO: move logic outside view
         view.startAnimation(clickAnimation())
 
         val lastElementIndex =
@@ -243,8 +236,7 @@ class MainActivity : AppCompatActivity() {
                 val exp = viewModel.currentExpression.toString()
                 val date = Date()
                 val result = viewModel.calculateResult(
-                    exp,
-                    date //current date
+                    exp
                 )
                 textViewResult.text = result.toString()
 
@@ -257,8 +249,7 @@ class MainActivity : AppCompatActivity() {
             switchResultVisibility(true) //result ready
         } else if (tag == "+/-") {
             invertSignOfCurrentlySelectedNumber(
-                currentlySelectedNumberIndexRange.first,
-                currentlySelectedNumberIndexRange.last
+                currentlySelectedNumberIndexRange.first
             )
         } else if (tag == "(") {
             viewModel.currentExpression.insert(currentIndex, "(")
@@ -273,7 +264,7 @@ class MainActivity : AppCompatActivity() {
             editTextExpression.setSelection(prevSel + 4)
         }
 
-        var cursorPosition = editTextExpression.selectionEnd
+        val cursorPosition = editTextExpression.selectionEnd
         editTextExpressionUpdate()
         if (editTextExpressionCursorCurrentIndex < editTextExpression.text.length - 2) {
             cursorPositionChangePending = true
@@ -298,7 +289,7 @@ class MainActivity : AppCompatActivity() {
                 tag = DIALOG_CALCULATIONS_HISTORY_TAG
             }
 
-        builder?.setView(view)
+        builder.setView(view)
 
         val lv = view.findViewById<ListView>(R.id.dialog_lvCalculationsHistory)
         lv.adapter = CalculationsHistoryArrayAdapter(this, listOfHistoricalCalculations?.map {
@@ -311,7 +302,7 @@ class MainActivity : AppCompatActivity() {
             (lv.adapter as CalculationsHistoryArrayAdapter).deleteAll()
         }
 
-        val dialog: AlertDialog? = builder?.create()
+        val dialog: AlertDialog? = builder.create()
 
         (lv.adapter as CalculationsHistoryArrayAdapter).setItemOnClickListener { equation ->
             viewModel.currentExpression.clear()
@@ -407,7 +398,7 @@ class MainActivity : AppCompatActivity() {
             editTextExpression.text.removeSpan(span) //remove previously applied span
     }
 
-    private fun invertSignOfCurrentlySelectedNumber(startIndex: Int, endIndex: Int) {
+    private fun invertSignOfCurrentlySelectedNumber(startIndex: Int) {
         if (viewModel.currentExpression[startIndex] == '-') //negative number
         {
             viewModel.currentExpression =

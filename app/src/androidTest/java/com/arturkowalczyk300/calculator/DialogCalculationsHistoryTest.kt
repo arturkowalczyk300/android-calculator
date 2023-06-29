@@ -7,7 +7,6 @@ import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,7 +16,6 @@ import org.hamcrest.CoreMatchers.*
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -28,11 +26,6 @@ import org.junit.runner.RunWith
 class DialogCalculationsHistoryTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
-
-    @Before
-    fun setup() {
-        //TODO: add clearing database before start
-    }
 
     @Test
     fun test_openList() {
@@ -160,6 +153,7 @@ class DialogCalculationsHistoryTest {
         }
     }
 
+    @Suppress("SameParameterValue")
     private fun matcherListSizeEqual(size: Int): Matcher<View>{
         return object: TypeSafeMatcher<View>(){
             override fun matchesSafely(item: View?): Boolean {
