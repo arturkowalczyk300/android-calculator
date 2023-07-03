@@ -5,7 +5,7 @@ import java.util.*
 
 class DatabaseConverters {
     @TypeConverter
-    fun fromDate(value: Date) = value.time.toLong()
+    fun fromDate(value: Date) = value.time
 
     @TypeConverter
     fun toDate(value: Long) = Date(value)

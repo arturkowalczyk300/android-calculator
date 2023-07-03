@@ -7,7 +7,6 @@ import androidx.test.espresso.Espresso.onData
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.ext.junit.runners.AndroidJUnit4
@@ -17,7 +16,6 @@ import org.hamcrest.CoreMatchers.*
 import org.hamcrest.Description
 import org.hamcrest.Matcher
 import org.hamcrest.TypeSafeMatcher
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -29,36 +27,31 @@ class DialogCalculationsHistoryTest {
     @get:Rule
     val activityRule = ActivityScenarioRule(MainActivity::class.java)
 
-    @Before
-    fun setup() {
-        //TODO: add clearing database before start
-    }
-
     @Test
     fun test_openList() {
-        onView(ViewMatchers.withId(R.id.main_options_menu_history))
+        onView(withId(R.id.main_options_menu_history))
             .perform(click())
 
-        onView(ViewMatchers.withTagValue(`is`(MainActivity.DIALOG_CALCULATIONS_HISTORY_TAG)))
+        onView(withTagValue(`is`(MainActivity.DIALOG_CALCULATIONS_HISTORY_TAG)))
             .check(matches(isDisplayed()))
 
     }
 
     @Test
     fun test_add_calculation_to_history_and_restore_later() {
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("+")))
+        onView(withTagValue(`is`("+")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
-            .perform(click())
-
-        onView(ViewMatchers.withTagValue(`is`("AC")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
 
-        onView(ViewMatchers.withId(R.id.main_options_menu_history))
+        onView(withTagValue(`is`("AC")))
+            .perform(click())
+
+        onView(withId(R.id.main_options_menu_history))
             .perform(click())
 
         onData(
@@ -73,16 +66,16 @@ class DialogCalculationsHistoryTest {
 
     @Test
     fun test_add_calculation_to_history_and_delete_it() {
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("+")))
+        onView(withTagValue(`is`("+")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
 
-        onView(ViewMatchers.withId(R.id.main_options_menu_history))
+        onView(withId(R.id.main_options_menu_history))
             .perform(click())
 
         onData(
@@ -111,24 +104,24 @@ class DialogCalculationsHistoryTest {
 
     @Test
     fun test_add_calculations_to_history_and_delete_all() {
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("+")))
+        onView(withTagValue(`is`("+")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("3")))
+        onView(withTagValue(`is`("3")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("AC")))
+        onView(withTagValue(`is`("AC")))
             .perform(click())
 
-        onView(ViewMatchers.withTagValue(`is`("6")))
+        onView(withTagValue(`is`("6")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("*")))
+        onView(withTagValue(`is`("*")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("2")))
+        onView(withTagValue(`is`("2")))
             .perform(click())
-        onView(ViewMatchers.withTagValue(`is`("=")))
+        onView(withTagValue(`is`("=")))
             .perform(click())
 
         onView(withId(R.id.main_options_menu_history)).perform(click())
@@ -160,6 +153,7 @@ class DialogCalculationsHistoryTest {
         }
     }
 
+    @Suppress("SameParameterValue")
     private fun matcherListSizeEqual(size: Int): Matcher<View>{
         return object: TypeSafeMatcher<View>(){
             override fun matchesSafely(item: View?): Boolean {

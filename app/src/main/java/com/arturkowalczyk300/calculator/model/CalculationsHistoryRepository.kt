@@ -2,14 +2,9 @@ package com.arturkowalczyk300.calculator.model
 
 import android.content.Context
 import androidx.lifecycle.LiveData
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Room
 import kotlinx.coroutines.runBlocking
-import java.util.*
 
-class CalculationsHistoryRepository() {
+class CalculationsHistoryRepository {
     private var database: CalculationsHistoryDatabase? = null
     private var dao: CalculationsHistoryDAO? = null
 
@@ -25,12 +20,6 @@ class CalculationsHistoryRepository() {
     fun insertCalculationHistoryEntity(entity: CalculationEntity) {
         return runBlocking {
             dao!!.insertCalculationHistoryEntity(entity)
-        }
-    }
-
-    fun deleteCalculationHistoryEntity(entity: CalculationEntity) {
-        return runBlocking {
-            dao!!.deleteCalculationHistoryEntity(entity)
         }
     }
 
