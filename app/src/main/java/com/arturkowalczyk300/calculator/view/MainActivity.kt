@@ -433,23 +433,19 @@ class MainActivity : AppCompatActivity() {
                 .alpha(0f)
                 .setDuration(resources.getInteger(R.integer.animation_durations_ms).toLong())
                 .setListener(object : AnimatorListener {
-                    override fun onAnimationStart(animation: Animator?) {
+                    override fun onAnimationStart(animation: Animator) {
 
                     }
 
-                    override fun onAnimationEnd(animation: Animator?, isReverse: Boolean) {
-                        super.onAnimationEnd(animation, isReverse)
-                    }
-
-                    override fun onAnimationEnd(animation: Animator?) {
+                    override fun onAnimationEnd(animation: Animator) {
                         llAdvancedOperations.visibility = View.GONE
                     }
 
-                    override fun onAnimationCancel(animation: Animator?) {
+                    override fun onAnimationCancel(animation: Animator) {
 
                     }
 
-                    override fun onAnimationRepeat(animation: Animator?) {
+                    override fun onAnimationRepeat(animation: Animator) {
 
                     }
                 })
